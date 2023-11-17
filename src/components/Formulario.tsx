@@ -1,10 +1,27 @@
-import { Fragment } from 'react'
-import { MARCAS, PLANES, YEARS } from '../constants'
+import { Fragment } from 'react';
+import { MARCAS, PLANES, YEARS } from '../constants';
+import useCotizador from '../hooks/useCotizador';
+import { Error } from './Error';
 
 export const Formulario = () => {
+  const { datos, handleChangeDatos, error, setError } = useCotizador();
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (Object.values(datos).includes('')) {
+      setError('Todos los campos son obligatorios');
+      return;
+    }
+
+    setError('');
+    
+  };
+
   return (
     <>
-      <form>
+      {error && <Error />}
+      <form onSubmit={handleSubmit}>
         <div className="my-5">
           <label
             htmlFor="marca"
@@ -15,9 +32,10 @@ export const Formulario = () => {
           <select
             name="marca"
             className="w-full p-3 bg-white border border-gray-200"
+            onChange={e => handleChangeDatos(e)}
           >
             <option value="">-- Selecciona la Marca</option>
-            {MARCAS.map((marca) => (
+            {MARCAS.map(marca => (
               <option key={marca.id} value={marca.id}>
                 {marca.nombre}
               </option>
@@ -35,9 +53,10 @@ export const Formulario = () => {
           <select
             name="year"
             className="w-full p-3 bg-white border border-gray-200"
+            onChange={e => handleChangeDatos(e)}
           >
             <option value="">-- Selecciona la Año</option>
-            {YEARS.map((year) => (
+            {YEARS.map(year => (
               <option key={year} value={year}>
                 {year}
               </option>
@@ -53,17 +72,26 @@ export const Formulario = () => {
             Plan
           </label>
           <div className="flex gap-3 items-center">
-            {PLANES.map((plan) => (
+            {PLANES.map(plan => (
               <Fragment key={plan.id}>
                 <label htmlFor="plan">{plan.nombre}</label>
-                <input type="radio" name="plan" value={plan.id} />
+                <input
+                  type="radio"
+                  name="plan"
+                  value={plan.id}
+                  onChange={e => handleChangeDatos(e)}
+                />
               </Fragment>
             ))}
           </div>
         </div>
 
-        <input type="submit" value="Cotizar" className='w-full bg-indigo-500 hover:bg-indigo-600 transition-colors text-white cursor-pointer p-3 uppercase font-bold' />
+        <input
+          type="submit"
+          value="Cotizar"
+          className="w-full bg-indigo-500 hover:bg-indigo-600 transition-colors text-white cursor-pointer p-3 uppercase font-bold"
+        />
       </form>
     </>
-  )
-}
+  );
+};
