@@ -1,4 +1,10 @@
-import { ReactNode, createContext, useEffect, useState } from 'react';
+import { ReactNode, createContext, useState } from 'react';
+import {
+  calcularMarca,
+  calcularPlan,
+  formatearDinero,
+  obtenerDiferenciaYear,
+} from '../helpers/index.helpers';
 
 interface CotizadorContextType {
   datos: datos;
@@ -9,6 +15,9 @@ interface CotizadorContextType {
   ) => void;
   error: string;
   setError: React.Dispatch<React.SetStateAction<string>>;
+  cotizarSeguro: () => void;
+  resultado: string;
+  isLoading: boolean;
 }
 
 interface datos {
@@ -21,6 +30,8 @@ const CotizadorContext = createContext({} as CotizadorContextType);
 
 const CotizadorProvider = ({ children }: { children: ReactNode }) => {
   const [error, setError] = useState('');
+  const [resultado, SetResultado] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const [datos, setDatos] = useState({
     marca: '',
@@ -39,9 +50,23 @@ const CotizadorProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
-  useEffect(() => {
-    console.log(datos);
-  }, [datos]);
+  const cotizarSeguro = () => {
+    let resultado: number | string = 2000;
+
+    const diferencia = obtenerDiferenciaYear(Number(datos.year));
+
+    resultado -= (diferencia * 3 * resultado) / 100;
+
+    resultado *= calcularMarca(Number(datos.marca));
+
+    resultado *= calcularPlan(Number(datos.plan));
+
+    setIsLoading(true);
+    setTimeout(() => {
+      SetResultado(formatearDinero(resultado));
+      setIsLoading(false);
+    }, 2000);
+  };
 
   return (
     <CotizadorContext.Provider
@@ -50,6 +75,9 @@ const CotizadorProvider = ({ children }: { children: ReactNode }) => {
         handleChangeDatos,
         error,
         setError,
+        cotizarSeguro,
+        resultado,
+        isLoading,
       }}
     >
       {children}

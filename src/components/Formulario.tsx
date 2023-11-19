@@ -4,7 +4,7 @@ import useCotizador from '../hooks/useCotizador';
 import { Error } from './Error';
 
 export const Formulario = () => {
-  const { datos, handleChangeDatos, error, setError } = useCotizador();
+  const { datos, handleChangeDatos, error, setError, cotizarSeguro } = useCotizador();
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -15,6 +15,8 @@ export const Formulario = () => {
     }
 
     setError('');
+
+    cotizarSeguro()
     
   };
 
